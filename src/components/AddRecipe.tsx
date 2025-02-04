@@ -1,34 +1,21 @@
 import { Modal, Box, TextField, Button, Snackbar, Alert } from '@mui/material';
 import { useState, useContext } from 'react';
-import { userContext } from './Home'; // Adjust the import path as necessary
+import { userContext } from './Home';
 import { useNavigate } from 'react-router';
 import * as yup from 'yup';
 import { recipeStore } from '../stores/stores';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-
 const recipeSchema = yup.object().shape({
     title: yup
-        .string()
-        .required('Title is required')
-        .min(2, 'Title must be at least 2 characters'),
+        .string().required('Title is required').min(2, 'Title must be at least 2 characters'),
     description: yup
-        .string()
-        .required('A description must be entered')
-        .min(10, 'The description must be at least 10 characters long'),
+        .string().required('A description must be entered').min(10, 'The description must be at least 10 characters long'),
     ingredients: yup
-        .string()
-        // .array()
-        // .of(yup.string().required())
-        .required('Ingredients are required')
-        .min(1, 'At least one ingredient is required'),
-
+        .string().required('Ingredients are required').min(1, 'At least one ingredient is required'),
     instructions: yup
-        .string()
-        .required('Instructions are required')
-        .min(10, 'Instructions must be at least 10 characters'),
+        .string().required('Instructions are required').min(10, 'Instructions must be at least 10 characters'),
 });
-
 type RecipeFormInputs = {
     title: string;
     description: string;
@@ -43,18 +30,17 @@ const AddRecipe = () => {
     if (!user) { throw new Error('Your Component must be used within a UserProvider'); }
     const [open, setOpen] = useState(true);
     const { register, formState: { errors }, handleSubmit } = useForm<RecipeFormInputs>({
-        resolver:yupResolver(recipeSchema)
+        resolver: yupResolver(recipeSchema)
     });
     const onSubmit: SubmitHandler<RecipeFormInputs> = async (data: any) => {
         const formattedData = { ...data, ingredients: data.ingredients.split('\n').map((ingredient: any) => ingredient.trim()) };
-        await recipeStore.addRecipe(formattedData, parseInt(user.id));
+        await recipeStore.addRecipe(formattedData, user.id);
         setOpen(false);
-        navigate('/RecipeList');
-
+        navigate(-1);
     };
     return (
         <>
-            <Modal open={open} onClose={() => setOpen(false)}>
+            <Modal open={open} onClose={() => { setOpen(false); navigate(-1) }}>
                 <Box
                     component="form"
                     onSubmit={handleSubmit(onSubmit)}
@@ -84,8 +70,7 @@ const AddRecipe = () => {
                         {...register('description')}
                         error={!!errors.description}
                         helperText={errors.description?.message}
-                        multiline
-                        rows={4}
+                        multiline rows={4}
                     />
                     <TextField
                         label="Ingredients (one per line)" fullWidth
@@ -93,8 +78,7 @@ const AddRecipe = () => {
                         {...register('ingredients')}
                         error={!!errors.ingredients}
                         helperText={errors.ingredients?.message}
-                        multiline
-                        rows={5}
+                        multiline rows={5}
                     />
                     <TextField
                         label="Instructions" fullWidth
@@ -102,8 +86,7 @@ const AddRecipe = () => {
                         {...register('instructions')}
                         error={!!errors.instructions}
                         helperText={errors.instructions?.message}
-                        multiline
-                        rows={4}
+                        multiline rows={4}
                     />
                     <Button type="submit" variant="contained" sx={{ mt: 2, backgroundColor: '#C4A36D', color: 'white' }} fullWidth>Add Recipe</Button>
                     <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={() => setOpenSnackbar(false)}>
@@ -114,5 +97,4 @@ const AddRecipe = () => {
         </>
     );
 };
-
 export default AddRecipe;

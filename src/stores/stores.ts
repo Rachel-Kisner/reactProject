@@ -22,6 +22,7 @@ class RecipeStore
 
   async addRecipe(recipe: Omit<Recipe, "id" | "authorId">, authorId: number) {
     try {
+      
           const res = await axios.post(
             "http://localhost:3000/api/recipes/",
             { ...recipe },

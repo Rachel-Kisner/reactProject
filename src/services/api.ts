@@ -10,48 +10,38 @@ export const api = {
                 email,
                 password
             });
-            return response.data;
+            return response.data.user;
         } catch (error) {
-            throw new Error('Login failed');
+            throw error;
         }
     },
+    register: async (email: string, password: string) => {
 
-    register: async (user: User) => {
-        console.log("regester", user);
         try {
-            const response = await axios.post(BASE_URL + '/user/register', user);
+            const response = await axios.post(BASE_URL + '/user/register', {
+                email,
+                password
+            });
             return response.data;
         } catch (error) {
-            console.error('register error: ', error);
-            throw new Error('Regester failed');
+            throw error;
         }
     },
-
-    // updateUser: async (user: User) => {
-    //     try {
-    //         const response = await axios.put(BASE_URL + '/user', user);
-    //         return response.data;
-    //     } catch (error) {
-    //         throw new Error('Update failed');
-    //     }
-    // },
-    // updateUser: async (user: User) => {
-    //     try {
-    //         const response = await axios.put(
-    //             BASE_URL + '/user',
-    //             user,
-    //             {
-    //                 headers: {
-    //                     'user-id': user.password 
-    //                 }
-    //             }
-    //         );
-    //         return response.data;
-    //     } catch (error) {
-    //         throw new Error('Update failed');
-    //     }
-    // }
+    checkEmailAndPassword: async (email: string,password:string): Promise<boolean> => {
+        try {
+            await api.login(email, password);  
+            return true;  
+        } catch (error: any) {
+            if (error.response?.status === 401) {
+                return false;
+            }
+            throw error; 
+        }
+    },
+    
     updateUser: async (user: User) => {
+        console.log("update-API", user);
+
         try {
             const response = await axios.put(
                 BASE_URL + '/user',
@@ -60,7 +50,7 @@ export const api = {
                 },
                 {
                     headers: {
-                        'user-id': user.id.toString(),
+                        'user-id': user.id
                     }
                 }
             );

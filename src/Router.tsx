@@ -1,20 +1,20 @@
-import First from "./components/first";
-import Menu from "./components/menu";
-import Second from "./components/second";
+import AddRecipe from "./components/AddRecipe";
+import Home from "./components/Home";
+import RecipeList from "./components/RecipeList";
 import { createBrowserRouter } from "react-router-dom";
 
 const router=createBrowserRouter([
     {
         path:"/",
-        element:<Menu/>,
+        element:<Home/>,
         children:[
             {
-                path:"/first",
-                element:<First/>
+                path:"/recipes",
+                element:<RecipeList/>
             },
             {
-                path:"/second",
-                element:<Second/>
+                path:"/add",
+                element:<AddRecipe/>
             }
         ]
     },
